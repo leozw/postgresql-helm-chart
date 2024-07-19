@@ -1,5 +1,19 @@
 replicaCount: 1
 
+statefulset: true
+
+persistence: 
+ enabled: true
+ volumeClaimTemplates:
+   - name: postgres-storage
+     accessModes: [ "ReadWriteOnce" ]
+     resources:
+       requests:
+         storage: 5Gi
+
+UpdateStrategy:
+   type: RollingUpdate
+
 image:
   registry: docker.io
   repository: postgres
@@ -26,11 +40,11 @@ envFrom: []
 podAnnotations: {}
 podLabels: {}
 
-Strategy:
-  rollingUpdate:
-    maxSurge: 1
-    maxUnavailable: 0
-  type: RollingUpdate
+Strategy: 
+   rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+   type: RollingUpdate
 
 podSecurityContext: {}
 securityContext:
@@ -64,13 +78,6 @@ ConfigMap: {}
 extraVolumeMounts: []
 extraVolumes: []
 
-persistence:
-  enabled: true
-  storageClass: ""
-  accessModes:
-    - ReadWriteOnce
-  size: 5Gi
-
 resources: {}
 
 autoscaling:
@@ -82,6 +89,8 @@ autoscaling:
 nodeSelector: {}
 tolerations: []
 affinity: {}
+
+CronJobs: []
 
 extraContainers: []
 extraInitContainers: []
