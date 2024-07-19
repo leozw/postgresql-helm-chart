@@ -66,13 +66,13 @@ spec:
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: 
-            {{  range .Values.command }}
-              - {{ . }}
-            {{ end }}
+            {{- range .Values.command }}
+              - {{ . | quote }}
+            {{- end }}
           args:          
-            {{  range .Values.args }}
-              - {{ . }}
-            {{ end }}
+            {{- range .Values.args }}
+              - {{ . | quote }}
+            {{- end }}
           ports:
             {{- if .Values.containerPorts }}
             {{ toYaml .Values.containerPorts | nindent 12 }}
@@ -83,6 +83,23 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgreskonga
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgreskonga
+                  key: POSTGRES_USER
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgreskonga
+                  key: POSTGRES_DB
             {{- if .Values.extraEnvs }}
             {{ toYaml .Values.extraEnvs | nindent 10 }}
             {{- end }}
@@ -144,4 +161,4 @@ spec:
           storage: {{ .resources.requests.storage }}
   {{- end }}        
   {{- end }}  
-{{- end }}  
+{{- end }}
