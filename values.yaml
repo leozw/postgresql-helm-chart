@@ -68,10 +68,9 @@ configMounts: []
 secretMounts: []
 
 Secrets:
-  postgreskonga:
-    POSTGRES_PASSWORD: "4WV6Gyc3T8jQP3z2xs8E45mG7C9swHopHm39TA58"
-    POSTGRES_USER: konga
-    POSTGRES_DB: konga
+  POSTGRES_PASSWORD: "4WV6Gyc3T8jQP3z2xs8E45mG7C9swHopHm39TA58"
+  POSTGRES_USER: "konga"
+  POSTGRES_DB: "konga"
 
 ConfigMap: {}
 
