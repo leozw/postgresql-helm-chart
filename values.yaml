@@ -1,0 +1,92 @@
+replicaCount: 1
+
+image:
+  registry: docker.io
+  repository: postgres
+  pullPolicy: IfNotPresent
+  tag: "9"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  annotations: {}
+  name: ""
+
+command: []
+args: []
+
+labels: {}
+extraEnvs: []
+
+envFrom: []
+
+podAnnotations: {}
+podLabels: {}
+
+Strategy:
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+  type: RollingUpdate
+
+podSecurityContext: {}
+securityContext:
+  privileged: false
+
+containerPorts:
+  - name: postgres
+    containerPort: 5432
+    protocol: TCP
+
+service:
+  annotations: {}
+  labels: {}
+  servicePorts:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+  type: ClusterIP
+
+configMounts: []
+secretMounts: []
+
+Secrets:
+  postgreskonga:
+    POSTGRES_PASSWORD: "4WV6Gyc3T8jQP3z2xs8E45mG7C9swHopHm39TA58"
+    POSTGRES_USER: konga
+    POSTGRES_DB: konga
+
+ConfigMap: {}
+
+extraVolumeMounts: []
+extraVolumes: []
+
+persistence:
+  enabled: true
+  storageClass: ""
+  accessModes:
+    - ReadWriteOnce
+  size: 5Gi
+
+resources: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+extraContainers: []
+extraInitContainers: []
+
+extraSecrets:
+  enabled: false
+extraConfigMap: 
+  enabled: false
