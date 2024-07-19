@@ -98,3 +98,10 @@ extraSecrets:
   enabled: false
 extraConfigMap: 
   enabled: false
+
+ingress:
+  enabled: false
+  annotations: {}
+  labels: {}
+  hosts: []
+  tls: []
