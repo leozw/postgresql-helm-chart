@@ -67,6 +67,9 @@ service:
 configMounts: []
 secretMounts: []
 
+# Nome personalizado para o Secret. Se não for definido, será gerado automaticamente no formato "<release-name>-secret".
+secretName: ""
+
 Secrets:
   POSTGRES_PASSWORD: "4WV6Gyc3T8jQP3z2xs8E45mG7C9swHopHm39TA58"
   POSTGRES_USER: "konga"
