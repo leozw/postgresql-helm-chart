@@ -42,7 +42,7 @@ image:
   registry: docker.io
   repository: postgres
   pullPolicy: IfNotPresent
-  tag: "15-alpine"  # Updated to more recent and lightweight version
+  tag: "17-alpine"  # Updated to more recent and lightweight version
 
 # Image pull secrets for private registries
 imagePullSecrets: []
