@@ -44,7 +44,6 @@
         overflow-x: hidden;
       }
 
-      /* Header */
       .header {
         background: var(--gradient-pg);
         color: white;
@@ -55,7 +54,7 @@
       }
 
       .header::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -66,8 +65,12 @@
       }
 
       @keyframes float {
-        0% { transform: translateX(0) translateY(0); }
-        100% { transform: translateX(-100px) translateY(-100px); }
+        0% {
+          transform: translateX(0) translateY(0);
+        }
+        100% {
+          transform: translateX(-100px) translateY(-100px);
+        }
       }
 
       .header-content {
@@ -130,7 +133,6 @@
         }
       }
 
-      /* Container */
       .container {
         max-width: 1200px;
         margin: -60px auto 80px;
@@ -139,7 +141,6 @@
         z-index: 10;
       }
 
-      /* Cards */
       .card {
         background: var(--bg-card);
         border-radius: var(--border-radius);
@@ -184,7 +185,6 @@
         margin: 0;
       }
 
-      /* Code blocks */
       .code-block {
         background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
         color: #e2e8f0;
@@ -200,7 +200,7 @@
       }
 
       .code-block::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -229,7 +229,6 @@
         transform: translateY(-2px);
       }
 
-      /* Features grid */
       .features-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -278,7 +277,6 @@
         line-height: 1.6;
       }
 
-      /* Links */
       .link {
         color: var(--pg-blue);
         text-decoration: none;
@@ -288,7 +286,7 @@
       }
 
       .link::after {
-        content: '';
+        content: "";
         position: absolute;
         bottom: -2px;
         left: 0;
@@ -306,7 +304,6 @@
         color: var(--pg-dark-blue);
       }
 
-      /* Stats */
       .stats {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -340,7 +337,6 @@
         font-weight: 500;
       }
 
-      /* Footer */
       .footer {
         background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
         color: white;
@@ -369,7 +365,7 @@
       }
 
       .footer-link::after {
-        content: '';
+        content: "";
         position: absolute;
         bottom: -2px;
         left: 0;
@@ -387,7 +383,6 @@
         color: white;
       }
 
-      /* Responsive */
       @media (max-width: 768px) {
         .header h1 {
           font-size: 2.5rem;
@@ -420,7 +415,6 @@
         }
       }
 
-      /* Animations */
       .fade-in {
         animation: fadeIn 0.8s ease-out;
       }
@@ -436,7 +430,6 @@
         }
       }
 
-      /* Scroll animations */
       .animate-on-scroll {
         opacity: 0;
         transform: translateY(50px);
@@ -457,13 +450,13 @@
         </div>
         <h1>PostgreSQL Helm Chart</h1>
         <p class="subtitle">
-          Production-ready PostgreSQL deployment for Kubernetes with StatefulSet, persistence, and enterprise-grade security
+          Production-ready PostgreSQL deployment for Kubernetes with
+          StatefulSet, persistence, and enterprise-grade security
         </p>
       </div>
     </header>
 
     <div class="container">
-      <!-- Quick Stats -->
       <div class="stats animate-on-scroll">
         <div class="stat-item">
           <span class="stat-number">17</span>
@@ -483,7 +476,6 @@
         </div>
       </div>
 
-      <!-- Overview -->
       <div class="card animate-on-scroll">
         <div class="card-header">
           <div class="card-icon">
@@ -492,59 +484,76 @@
           <h2>Overview</h2>
         </div>
         <p class="description">
-          Deploy PostgreSQL with confidence using our production-ready Helm chart. Featuring automatic failover, 
-          persistent storage, comprehensive monitoring, and enterprise security. Perfect for microservices, 
-          data analytics, and mission-critical applications.
+          Deploy PostgreSQL with confidence using our production-ready Helm
+          chart. Featuring automatic failover, persistent storage, comprehensive
+          monitoring, and enterprise security. Perfect for microservices, data
+          analytics, and mission-critical applications.
         </p>
 
-        <!-- Features Grid -->
         <div class="features-grid">
           <div class="feature-card">
             <div class="feature-icon">
               <i class="fas fa-shield-alt"></i>
             </div>
             <h3>Enterprise Security</h3>
-            <p>Built-in security contexts, secrets management, and RBAC integration for production workloads.</p>
+            <p>
+              Built-in security contexts, secrets management, and RBAC
+              integration for production workloads.
+            </p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">
               <i class="fas fa-hdd"></i>
             </div>
             <h3>Persistent Storage</h3>
-            <p>StatefulSet with persistent volumes, automatic backup scheduling, and disaster recovery options.</p>
+            <p>
+              StatefulSet with persistent volumes, automatic backup scheduling,
+              and disaster recovery options.
+            </p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">
               <i class="fas fa-chart-line"></i>
             </div>
             <h3>Auto Scaling</h3>
-            <p>Horizontal Pod Autoscaler with CPU and memory metrics for optimal resource utilization.</p>
+            <p>
+              Horizontal Pod Autoscaler with CPU and memory metrics for optimal
+              resource utilization.
+            </p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">
               <i class="fas fa-heartbeat"></i>
             </div>
             <h3>Health Monitoring</h3>
-            <p>Advanced liveness and readiness probes with customizable health check intervals.</p>
+            <p>
+              Advanced liveness and readiness probes with customizable health
+              check intervals.
+            </p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">
               <i class="fas fa-cogs"></i>
             </div>
             <h3>Flexible Config</h3>
-            <p>Comprehensive ConfigMap and Secret management with templating support.</p>
+            <p>
+              Comprehensive ConfigMap and Secret management with templating
+              support.
+            </p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">
               <i class="fas fa-network-wired"></i>
             </div>
             <h3>Service Mesh Ready</h3>
-            <p>Istio and Linkerd compatible with service discovery and load balancing.</p>
+            <p>
+              Istio and Linkerd compatible with service discovery and load
+              balancing.
+            </p>
           </div>
         </div>
       </div>
 
-      <!-- Installation -->
       <div class="card animate-on-scroll">
         <div class="card-header">
           <div class="card-icon">
@@ -553,10 +562,15 @@
           <h2>Get Repository Info</h2>
         </div>
         <div class="code-block">
-          <button class="copy-btn" onclick="copyToClipboard(this, 'helm repo add postgresql https://SEU_USERNAME.github.io/postgresql-helm-chart/')">
-            <i class="fas fa-copy"></i> Copy
+          <button
+            class="copy-btn"
+            onclick="copyToClipboard(this, 'helm repo add postgresql https://leozw.github.io/postgresql/')"
+          >
+            "> <i class="fas fa-copy"></i> Copy
           </button>
-          <code>helm repo add postgresql https://SEU_USERNAME.github.io/postgresql-helm-chart/</code>
+          <code
+            >helm repo add postgresql https://leozw.github.io/postgresql/</code
+          >
         </div>
       </div>
 
@@ -569,24 +583,34 @@
         </div>
         <p>Deploy PostgreSQL with default production settings:</p>
         <div class="code-block">
-          <button class="copy-btn" onclick="copyToClipboard(this, 'helm install my-postgres postgresql/postgresql -n database --create-namespace')">
+          <button
+            class="copy-btn"
+            onclick="copyToClipboard(this, 'helm install my-postgres postgresql/postgresql -n database --create-namespace')"
+          >
             <i class="fas fa-copy"></i> Copy
           </button>
-          <code>helm install my-postgres postgresql/postgresql -n database --create-namespace</code>
+          <code
+            >helm install my-postgres postgresql/postgresql -n database
+            --create-namespace</code
+          >
         </div>
-        
-        <p style="margin-top: 30px;">Or customize with your own values:</p>
+
+        <p style="margin-top: 30px">Or customize with your own values:</p>
         <div class="code-block">
-          <button class="copy-btn" onclick="copyToClipboard(this, 'helm install my-postgres postgresql/postgresql -n database --create-namespace --set persistence.enabled=true --set resources.requests.memory=2Gi')">
+          <button
+            class="copy-btn"
+            onclick="copyToClipboard(this, 'helm install my-postgres postgresql/postgresql -n database --create-namespace --set persistence.enabled=true --set resources.requests.memory=2Gi')"
+          >
             <i class="fas fa-copy"></i> Copy
           </button>
-          <code>helm install my-postgres postgresql/postgresql -n database --create-namespace \
-  --set persistence.enabled=true \
-  --set resources.requests.memory=2Gi</code>
+          <code
+            >helm install my-postgres postgresql/postgresql -n database
+            --create-namespace \ --set persistence.enabled=true \ --set
+            resources.requests.memory=2Gi</code
+          >
         </div>
       </div>
 
-      <!-- Configuration -->
       <div class="card animate-on-scroll">
         <div class="card-header">
           <div class="card-icon">
@@ -596,51 +620,35 @@
         </div>
         <p>Explore all available configuration options and examples:</p>
         <div class="code-block">
-          <a href="https://github.com/SEU_USERNAME/postgresql-helm-chart/blob/main/values.yaml" 
-             target="_blank" 
-             class="footer-link" 
-             style="color: #90cdf4; text-decoration: none;">
+          <a
+            href="https://github.com/leozw/postgresql/blob/main/values.yaml"
+            target="_blank"
+            class="footer-link"
+            style="color: #90cdf4; text-decoration: none"
+          >
             <i class="fab fa-github"></i> View complete values.yaml on GitHub
           </a>
         </div>
 
-        <p style="margin-top: 20px;">Key configuration highlights:</p>
+        <p style="margin-top: 20px">Key configuration highlights:</p>
         <div class="code-block">
-          <button class="copy-btn" onclick="copyToClipboard(this, configExample)">
+          <button
+            class="copy-btn"
+            onclick="copyToClipboard(this, configExample)"
+          >
             <i class="fas fa-copy"></i> Copy
           </button>
-          <code id="config-example"># Production Configuration Example
-statefulset: true
-replicaCount: 3
-
-persistence:
-  enabled: true
-  volumeClaimTemplates:
-    - name: postgres-storage
-      resources:
-        requests:
-          storage: 100Gi
-
-resources:
-  requests:
-    memory: 2Gi
-    cpu: 1000m
-  limits:
-    memory: 4Gi
-    cpu: 2000m
-
-postgresql:
-  enabled: true
-  pgdata: "/var/lib/postgresql/data/pgdata"
-
-autoscaling:
-  enabled: true
-  minReplicas: 2
-  maxReplicas: 10</code>
+          <code id="config-example"
+            ># Production Configuration Example statefulset: true replicaCount:
+            3 persistence: enabled: true volumeClaimTemplates: - name:
+            postgres-storage resources: requests: storage: 100Gi resources:
+            requests: memory: 2Gi cpu: 1000m limits: memory: 4Gi cpu: 2000m
+            postgresql: enabled: true pgdata: "/var/lib/postgresql/data/pgdata"
+            autoscaling: enabled: true minReplicas: 2 maxReplicas: 10</code
+          >
         </div>
       </div>
 
-      <!-- Usage Examples -->
       <div class="card animate-on-scroll">
         <div class="card-header">
           <div class="card-icon">
@@ -648,36 +656,44 @@ autoscaling:
           </div>
           <h2>Usage Examples</h2>
         </div>
-        
-        <h3 style="color: var(--pg-blue); margin-bottom: 15px;">Connect to PostgreSQL</h3>
+
+        <h3 style="color: var(--pg-blue); margin-bottom: 15px">
+          Connect to PostgreSQL
+        </h3>
         <div class="code-block">
-          <button class="copy-btn" onclick="copyToClipboard(this, connectExample)">
+          <button
+            class="copy-btn"
+            onclick="copyToClipboard(this, connectExample)"
+          >
             <i class="fas fa-copy"></i> Copy
           </button>
-          <code id="connect-example"># Get connection details
-export POSTGRES_PASSWORD=$(kubectl get secret my-postgres-secret -o jsonpath="{.data.POSTGRES_PASSWORD}" | base64 -d)
-
-# Port forward to access locally  
-kubectl port-forward service/my-postgres-service 5432:5432
-
-# Connect using psql
-psql -h localhost -U konga -d konga</code>
+          <code id="connect-example"
+            ># Get connection details export POSTGRES_PASSWORD=$(kubectl get
+            secret my-postgres-secret -o jsonpath="{.data.POSTGRES_PASSWORD}" |
+            base64 -d) # Port forward to access locally kubectl port-forward
+            service/my-postgres-service 5432:5432 # Connect using psql psql -h
+            localhost -U konga -d konga</code
+          >
         </div>
 
-        <h3 style="color: var(--pg-blue); margin: 30px 0 15px;">Backup & Restore</h3>
+        <h3 style="color: var(--pg-blue); margin: 30px 0 15px">
+          Backup & Restore
+        </h3>
         <div class="code-block">
-          <button class="copy-btn" onclick="copyToClipboard(this, backupExample)">
+          <button
+            class="copy-btn"
+            onclick="copyToClipboard(this, backupExample)"
+          >
             <i class="fas fa-copy"></i> Copy
           </button>
-          <code id="backup-example"># Create backup
-kubectl exec -it my-postgres-0 -- pg_dump -U konga konga > backup.sql
-
-# Restore from backup
-kubectl exec -i my-postgres-0 -- psql -U konga -d konga < backup.sql</code>
+          <code id="backup-example"
+            ># Create backup kubectl exec -it my-postgres-0 -- pg_dump -U konga
+            konga > backup.sql # Restore from backup kubectl exec -i
+            my-postgres-0 -- psql -U konga -d konga < backup.sql</code
+          >
         </div>
       </div>
 
-      <!-- Uninstall -->
       <div class="card animate-on-scroll">
         <div class="card-header">
           <div class="card-icon">
@@ -686,30 +702,52 @@ kubectl exec -i my-postgres-0 -- psql -U konga -d konga < backup.sql</code>
           <h2>Uninstall Chart</h2>
         </div>
         <div class="code-block">
-          <button class="copy-btn" onclick="copyToClipboard(this, 'helm uninstall my-postgres -n database')">
+          <button
+            class="copy-btn"
+            onclick="copyToClipboard(this, 'helm uninstall my-postgres -n database')"
+          >
             <i class="fas fa-copy"></i> Copy
           </button>
           <code>helm uninstall my-postgres -n database</code>
         </div>
-        <p style="margin-top: 15px; color: var(--text-secondary);">
-          <i class="fas fa-exclamation-triangle" style="color: #f56565; margin-right: 8px;"></i>
-          Note: This will not delete persistent volumes. Delete them manually if needed.
+        <p style="margin-top: 15px; color: var(--text-secondary)">
+          <i
+            class="fas fa-exclamation-triangle"
+            style="color: #f56565; margin-right: 8px"
+          ></i>
+          Note: This will not delete persistent volumes. Delete them manually if
+          needed.
         </p>
       </div>
     </div>
 
     <footer class="footer">
       <div class="footer-content">
-        <p>&copy; 2024 PostgreSQL Helm Chart. Production ready database deployment.</p>
         <p>
-          <a href="https://github.com/SEU_USERNAME" target="_blank" class="footer-link">
+          &copy; 2024 PostgreSQL Helm Chart. Production ready database
+          deployment.
+        </p>
+        <p>
+          <a
+            href="https://github.com/leozw/postgresql"
+            target="_blank"
+            class="footer-link"
+          >
+            <i class="fas fa-code-branch"></i> PostgreSQL Chart Repo
+          </a>
+          <span style="margin: 0 20px">•</span>
+          <a
+            href="https://github.com/leozw"
+            target="_blank"
+            class="footer-link"
+          >
             <i class="fab fa-github"></i> Visit GitHub
           </a>
-          <span style="margin: 0 20px;">•</span>
+          <span style="margin: 0 20px">•</span>
           <a href="https://postgresql.org" target="_blank" class="footer-link">
             <i class="fas fa-database"></i> PostgreSQL.org
           </a>
-          <span style="margin: 0 20px;">•</span>
+          <span style="margin: 0 20px">•</span>
           <a href="https://helm.sh" target="_blank" class="footer-link">
             <i class="fas fa-ship"></i> Helm.sh
           </a>
@@ -718,7 +756,6 @@ kubectl exec -i my-postgres-0 -- psql -U konga -d konga < backup.sql</code>
     </footer>
 
     <script>
-      // Copy to clipboard functionality
       const configExample = `# Production Configuration Example
 statefulset: true
 replicaCount: 3
@@ -767,41 +804,39 @@ kubectl exec -i my-postgres-0 -- psql -U konga -d konga < backup.sql`;
         navigator.clipboard.writeText(text).then(() => {
           const originalText = button.innerHTML;
           button.innerHTML = '<i class="fas fa-check"></i> Copied!';
-          button.style.background = 'rgba(72, 187, 120, 0.2)';
-          
+          button.style.background = "rgba(72, 187, 120, 0.2)";
+
           setTimeout(() => {
             button.innerHTML = originalText;
-            button.style.background = 'rgba(255, 255, 255, 0.1)';
+            button.style.background = "rgba(255, 255, 255, 0.1)";
           }, 2000);
         });
       }
 
-      // Scroll animations
       const observerOptions = {
         threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
+        rootMargin: "0px 0px -50px 0px",
       };
 
       const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('in-view');
+            entry.target.classList.add("in-view");
           }
         });
       }, observerOptions);
 
-      document.querySelectorAll('.animate-on-scroll').forEach(el => {
+      document.querySelectorAll(".animate-on-scroll").forEach((el) => {
         observer.observe(el);
       });
 
-      // Add some interactive effects
-      document.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('mouseenter', () => {
-          card.style.transform = 'translateY(-8px) scale(1.02)';
+      document.querySelectorAll(".card").forEach((card) => {
+        card.addEventListener("mouseenter", () => {
+          card.style.transform = "translateY(-8px) scale(1.02)";
         });
-        
-        card.addEventListener('mouseleave', () => {
-          card.style.transform = 'translateY(0) scale(1)';
+
+        card.addEventListener("mouseleave", () => {
+          card.style.transform = "translateY(0) scale(1)";
         });
       });
     </script>
