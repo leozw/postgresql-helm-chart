@@ -2,7 +2,7 @@
 
 A simple, production-ready Helm chart for deploying PostgreSQL on Kubernetes.
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 15-alpine](https://img.shields.io/badge/AppVersion-15--alpine-informational?style=flat-square)
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 17-alpine](https://img.shields.io/badge/AppVersion-17--alpine-informational?style=flat-square)
 
 ## Quick Start
 
@@ -49,7 +49,7 @@ replicaCount: 1
 
 image:
   repository: postgres
-  tag: "15-alpine"
+  tag: "17-alpine"
 
 persistence:
   enabled: true
@@ -141,7 +141,7 @@ CronJobs:
     schedule: "0 2 * * *"  # Every day at 2 AM
     image:
       repository: postgres
-      tag: "15-alpine"
+      tag: "17-alpine"
     command: ["sh", "-c"]
     args:
       - |
@@ -162,7 +162,7 @@ CronJobs:
 | `statefulset` | Deploy as StatefulSet instead of Deployment | `true` |
 | `replicaCount` | Number of replicas | `1` |
 | `image.repository` | PostgreSQL image repository | `postgres` |
-| `image.tag` | PostgreSQL image tag | `15-alpine` |
+| `image.tag` | PostgreSQL image tag | `17-alpine` |
 | `persistence.enabled` | Enable persistent storage | `true` |
 | `Secrets.POSTGRES_PASSWORD` | PostgreSQL password | `SecurePassword123!` |
 | `Secrets.POSTGRES_USER` | PostgreSQL user | `konga` |
