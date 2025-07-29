@@ -1,0 +1,110 @@
+replicaCount: 1
+
+statefulset: true
+
+persistence: 
+ enabled: true
+ volumeClaimTemplates:
+   - name: postgres-storage
+     accessModes: [ "ReadWriteOnce" ]
+     resources:
+       requests:
+         storage: 5Gi
+
+UpdateStrategy:
+   type: RollingUpdate
+
+image:
+  registry: docker.io
+  repository: postgres
+  pullPolicy: IfNotPresent
+  tag: "9"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  annotations: {}
+  name: ""
+
+command: []
+args: []
+
+labels: {}
+extraEnvs: []
+
+envFrom: []
+
+podAnnotations: {}
+podLabels: {}
+
+Strategy: 
+   rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+   type: RollingUpdate
+
+podSecurityContext: {}
+securityContext:
+  privileged: false
+
+containerPorts:
+  - name: postgres
+    containerPort: 5432
+    protocol: TCP
+
+service:
+  annotations: {}
+  labels: {}
+  servicePorts:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+  type: ClusterIP
+
+configMounts: []
+secretMounts: []
+
+# Nome personalizado para o Secret. Se não for definido, será gerado automaticamente no formato "<release-name>-secret".
+secretName: ""
+
+Secrets:
+  POSTGRES_PASSWORD: "4WV6Gyc3T8jQP3z2xs8E45mG7C9swHopHm39TA58"
+  POSTGRES_USER: "konga"
+  POSTGRES_DB: "konga"
+
+ConfigMap: {}
+
+extraVolumeMounts: []
+extraVolumes: []
+
+resources: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+CronJobs: []
+
+extraContainers: []
+extraInitContainers: []
+
+extraSecrets:
+  enabled: false
+extraConfigMap: 
+  enabled: false
+
+ingress:
+  enabled: false
+  annotations: {}
+  labels: {}
+  hosts: []
+  tls: []
