@@ -1,0 +1,334 @@
+# Default values for postgresql chart
+# This is a YAML-formatted file.
+
+# Number of replicas
+replicaCount: 1
+
+# Use StatefulSet instead of Deployment for stateful applications like databases
+statefulset: true
+
+# PostgreSQL specific configuration
+postgresql:
+  enabled: true
+  pgdata: "/var/lib/postgresql/data/pgdata"
+  passwordKey: "POSTGRES_PASSWORD"
+  userKey: "POSTGRES_USER"
+  databaseKey: "POSTGRES_DB"
+
+# Persistence configuration - only applies to StatefulSet
+persistence: 
+  enabled: true
+  volumeClaimTemplates:
+    - name: postgres-storage
+      accessModes: [ "ReadWriteOnce" ]
+      # storageClassName: "fast-ssd"  # Uncomment to specify storage class
+      resources:
+        requests:
+          storage: 5Gi
+
+# Update strategy for StatefulSet
+UpdateStrategy:
+  type: RollingUpdate
+
+# Rolling update strategy for Deployment
+Strategy: 
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+  type: RollingUpdate
+
+# Container image configuration
+image:
+  registry: docker.io
+  repository: postgres
+  pullPolicy: IfNotPresent
+  tag: "17-alpine"
+
+# Image pull secrets for private registries
+imagePullSecrets: []
+# - name: myregistrykey
+
+# Override the chart name
+nameOverride: ""
+fullnameOverride: ""
+
+# Service Account configuration
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Command and args override
+command: []
+# - "docker-entrypoint.sh"
+args: []
+# - "postgres"
+
+# Additional labels for Deployment/StatefulSet
+labels: {}
+  # environment: production
+  # team: database
+
+# Extra environment variables
+extraEnvs: []
+# - name: POSTGRES_INITDB_ARGS
+#   value: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+# - name: TZ
+#   value: "America/Sao_Paulo"
+
+# Load environment variables from ConfigMap or Secret
+envFrom: []
+# - configMapRef:
+#     name: postgres-config
+# - secretRef:
+#     name: postgres-secret
+
+# Pod annotations
+podAnnotations: {}
+  # prometheus.io/scrape: "true"
+  # prometheus.io/port: "9187"
+
+# Pod labels
+podLabels: {}
+  # version: "v1.0.0"
+
+# Pod Security Context
+podSecurityContext: 
+  fsGroup: 999
+  runAsUser: 999
+  runAsGroup: 999
+
+# Container Security Context
+securityContext:
+  privileged: false
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 999
+  capabilities:
+    drop:
+    - ALL
+
+# Container ports
+containerPorts:
+  - name: postgres
+    containerPort: 5432
+    protocol: TCP
+
+# Liveness and Readiness probes
+probe:
+  livenessProbe:
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 -p 5432
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 6
+  readinessProbe:
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 -p 5432
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 6
+
+# Service configuration
+service:
+  type: ClusterIP
+  annotations: {}
+    # service.beta.kubernetes.io/aws-load-balancer-type: nlb
+  labels: {}
+    # environment: production
+  servicePorts:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+      # nodePort: 30432  # Only for NodePort type
+
+# ConfigMap mounts - mount ConfigMap as files
+configMounts: []
+# - name: postgres-config
+#   configName: postgres-config
+#   path: /etc/postgresql/postgresql.conf
+#   subPath: postgresql.conf
+
+# Secret mounts - mount Secret as files
+secretMounts: []
+# - name: postgres-certs
+#   secretName: postgres-tls-secret
+#   path: /etc/ssl/certs
+#   subPath: tls.crt
+
+# Custom secret name (if empty, will be generated as "<release-name>-secret")
+secretName: ""
+
+# Main secrets - automatically base64 encoded
+# IMPORTANT: Change these values before deploying to production!
+# You can also create the secret manually and reference it using secretName above
+Secrets:
+  POSTGRES_PASSWORD: ""  # REQUIRED: Set a strong password
+  POSTGRES_USER: "postgres"  # Default PostgreSQL user
+  POSTGRES_DB: "postgres"  # Default database name
+
+# Main ConfigMap data
+ConfigMap: {}
+# postgresql.conf: |
+#   listen_addresses = '*'
+#   max_connections = 100
+#   shared_buffers = 128MB
+
+# Extra volumes and volume mounts
+extraVolumeMounts: []
+# - name: custom-config
+#   mountPath: /etc/postgresql/custom.conf
+#   subPath: custom.conf
+
+extraVolumes: []
+# - name: custom-config
+#   configMap:
+#     name: postgres-custom-config
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+# Horizontal Pod Autoscaler
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# Node selection
+nodeSelector: {}
+  # kubernetes.io/arch: amd64
+  # node-type: database
+
+# Tolerations
+tolerations: []
+# - key: "database"
+#   operator: "Equal"
+#   value: "true"
+#   effect: "NoSchedule"
+
+# Affinity rules
+affinity: {}
+# podAntiAffinity:
+#   preferredDuringSchedulingIgnoredDuringExecution:
+#   - weight: 100
+#     podAffinityTerm:
+#       labelSelector:
+#         matchExpressions:
+#         - key: app.kubernetes.io/name
+#           operator: In
+#           values:
+#           - postgresql
+#       topologyKey: kubernetes.io/hostname
+
+# CronJobs configuration
+CronJobs: []
+# - name: postgres-backup
+#   schedule: "0 2 * * *"
+#   image:
+#     repository: postgres
+#     tag: "17-alpine"
+#     imagePullPolicy: IfNotPresent
+#   command: ["sh"]
+#   args:
+#     - -c
+#     - |
+#       pg_dump -h postgres-service -U $POSTGRES_USER $POSTGRES_DB > /backup/backup-$(date +%Y%m%d-%H%M%S).sql
+#   env:
+#     - name: POSTGRES_USER
+#       valueFrom:
+#         secretKeyRef:
+#           name: postgres-secret
+#           key: POSTGRES_USER
+#   volumeMounts:
+#     - name: backup-storage
+#       mountPath: /backup
+#   volumes:
+#     - name: backup-storage
+#       persistentVolumeClaim:
+#         claimName: postgres-backup-pvc
+#   restartPolicy: OnFailure
+#   concurrencyPolicy: Forbid
+#   successfulJobsHistoryLimit: 3
+#   failedJobsHistoryLimit: 1
+
+# Extra containers (sidecars)
+extraContainers: []
+# - name: postgres-exporter
+#   image: prometheuscommunity/postgres-exporter:latest
+#   env:
+#     - name: DATA_SOURCE_NAME
+#       value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@localhost:5432/$(POSTGRES_DB)?sslmode=disable"
+#   ports:
+#     - name: metrics
+#       containerPort: 9187
+
+# Extra init containers
+extraInitContainers: []
+# - name: postgres-init
+#   image: postgres:17-alpine
+#   command: ["sh", "-c"]
+#   args:
+#     - |
+#       echo "Initializing database..."
+#       # Custom initialization logic here
+
+# Extra secrets configuration
+extraSecrets:
+  enabled: false
+  name: ""  # Will be generated as "<release-name>-extra-secret" if empty
+  data: {}
+  # username: dXNlcm5hbWU=  # base64 encoded values
+  # password: cGFzc3dvcmQ=
+
+# Extra ConfigMap configuration  
+extraConfigMap: 
+  enabled: false
+  name: ""  # Will be generated as "<release-name>-extra-configmap" if empty
+  data: {}
+  # config.yaml: |
+  #   key: value
+  # script.sh: |
+  #   #!/bin/bash
+  #   echo "Hello World"
+
+# Ingress configuration
+ingress:
+  enabled: false
+  ingressClassName: ""  # nginx, traefik, etc.
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # nginx.ingress.kubernetes.io/tcp-services-configmap: default/tcp-services
+  labels: {}
+  hosts: []
+  # - host: postgres.example.com
+  #   paths:
+  #   - path: /
+  #     pathType: Prefix
+  #     number: 5432
+  tls: []
+  # - secretName: postgres-tls-secret
+  #   hosts:
+  #     - postgres.example.com
