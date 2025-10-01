@@ -1,4 +1,4 @@
-# Default values for postgresql chart by leozw
+# Default values for postgresql chart
 # This is a YAML-formatted file.
 
 # Number of replicas
@@ -42,7 +42,7 @@ image:
   registry: docker.io
   repository: postgres
   pullPolicy: IfNotPresent
-  tag: "17-alpine"  # Updated to more recent and lightweight version
+  tag: "17-alpine"
 
 # Image pull secrets for private registries
 imagePullSecrets: []
@@ -175,10 +175,12 @@ secretMounts: []
 secretName: ""
 
 # Main secrets - automatically base64 encoded
+# IMPORTANT: Change these values before deploying to production!
+# You can also create the secret manually and reference it using secretName above
 Secrets:
-  POSTGRES_PASSWORD: "SecurePassword123!"
-  POSTGRES_USER: "konga"
-  POSTGRES_DB: "konga"
+  POSTGRES_PASSWORD: ""  # REQUIRED: Set a strong password
+  POSTGRES_USER: "postgres"  # Default PostgreSQL user
+  POSTGRES_DB: "postgres"  # Default database name
 
 # Main ConfigMap data
 ConfigMap: {}
@@ -247,7 +249,7 @@ CronJobs: []
 #   schedule: "0 2 * * *"
 #   image:
 #     repository: postgres
-#     tag: "15-alpine"
+#     tag: "17-alpine"
 #     imagePullPolicy: IfNotPresent
 #   command: ["sh"]
 #   args:
@@ -286,7 +288,7 @@ extraContainers: []
 # Extra init containers
 extraInitContainers: []
 # - name: postgres-init
-#   image: postgres:15-alpine
+#   image: postgres:17-alpine
 #   command: ["sh", "-c"]
 #   args:
 #     - |
