@@ -70,6 +70,38 @@ spec:
             {{- range .Values.command }}
               - {{ . | quote }}
             {{- end }}
+          {{- else if .Values.postgresql.enabled }}
+          {{/* PostgreSQL-specific command that bypasses chmod issues */}}
+          command:
+            - "sh"
+            - "-c"
+            - |
+              set -e
+              echo "Starting PostgreSQL with permission workaround..."
+              mkdir -p "$PGDATA"
+              chmod 700 "$PGDATA" 2>/dev/null || true
+              mkdir -p /var/run/postgresql
+              chmod 775 /var/run/postgresql 2>/dev/null || true
+              chown -R postgres:postgres /var/run/postgresql 2>/dev/null || true
+              
+              if [ ! -s "$PGDATA/PG_VERSION" ]; then
+                echo "Initializing database..."
+                initdb --username="$POSTGRES_USER" \
+                  --pwfile=<(echo "$POSTGRES_PASSWORD") \
+                  --auth-local=trust \
+                  --auth-host=md5 || exit 1
+                
+                echo "host all all all md5" >> "$PGDATA/pg_hba.conf"
+                echo "listen_addresses='*'" >> "$PGDATA/postgresql.conf"
+                
+                pg_ctl -D "$PGDATA" -o "-c listen_addresses=''" -w start
+                psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+                  CREATE DATABASE "$POSTGRES_DB";
+              EOSQL
+                pg_ctl -D "$PGDATA" -m fast -w stop
+              fi
+              
+              exec postgres
           {{- end }}
           {{- if .Values.args }}
           args:          
@@ -87,6 +119,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
+            {{- if .Values.postgresql.enabled }}
             - name: PGDATA
               value: {{ .Values.postgresql.pgdata }}
             - name: POSTGRES_PASSWORD
@@ -104,6 +137,7 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secretName | default (printf "%s-secret" .Release.Name) }}
                   key: {{ .Values.postgresql.databaseKey }}
+            {{- end }}
             {{- if .Values.extraEnvs }}
             {{ toYaml .Values.extraEnvs | nindent 12 }}
             {{- end }}
