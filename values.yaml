@@ -69,6 +69,7 @@ securityContext:
     - FOWNER
     - SETGID
     - SETUID
+    - SETFCAP
   seccompProfile:
     type: RuntimeDefault
 
@@ -349,6 +350,14 @@ extraContainers: []
 #   ports:
 #     - name: metrics
 #       containerPort: 9187
+
+# Fix permissions for PostgreSQL data directory
+fixPermissions:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "17-alpine"
+    pullPolicy: IfNotPresent
 
 # Extra init containers
 extraInitContainers: []
