@@ -80,7 +80,9 @@ spec:
           - name: backup-storage
             persistentVolumeClaim:
               claimName: {{ include "tpl.fullname" . }}-backup-pvc
+{{- end }}
 ---
+{{- if .Values.backup.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
