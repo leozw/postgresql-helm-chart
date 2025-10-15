@@ -21,8 +21,8 @@ data:
     if [ ! -s "$PGDATA/PG_VERSION" ]; then
       echo "Initializing PostgreSQL database..."
       
-      # Inicializa como usuário postgres, sem validação estrita de permissões
-      gosu postgres initdb \
+      # Inicializa como usuário postgres
+      su-exec postgres initdb \
         -D "$PGDATA" \
         --username="$POSTGRES_USER" \
         --pwfile=<(echo "$POSTGRES_PASSWORD") \
@@ -37,16 +37,16 @@ data:
       echo "listen_addresses='*'" >> "$PGDATA/postgresql.conf"
       
       # Inicia temporariamente para criar o banco
-      gosu postgres pg_ctl -D "$PGDATA" -o "-c listen_addresses=''" -w start
-      gosu postgres psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+      su-exec postgres pg_ctl -D "$PGDATA" -o "-c listen_addresses=''" -w start
+      su-exec postgres psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
         CREATE DATABASE "$POSTGRES_DB";
       EOSQL
-      gosu postgres pg_ctl -D "$PGDATA" -m fast -w stop
+      su-exec postgres pg_ctl -D "$PGDATA" -m fast -w stop
       
       echo "PostgreSQL initialized successfully!"
     fi
     
     # Inicia o PostgreSQL
     echo "Starting PostgreSQL server..."
-    exec gosu postgres postgres
+    exec su-exec postgres postgres
 {{- end }}
