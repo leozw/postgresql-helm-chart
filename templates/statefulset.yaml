@@ -65,14 +65,18 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }} 
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.command }}
           command: 
             {{- range .Values.command }}
               - {{ . | quote }}
             {{- end }}
+          {{- end }}
+          {{- if .Values.args }}
           args:          
             {{- range .Values.args }}
               - {{ . | quote }}
             {{- end }}
+          {{- end }}
           ports:
             {{- if .Values.containerPorts }}
             {{ toYaml .Values.containerPorts | nindent 12 }}
