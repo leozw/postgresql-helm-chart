@@ -55,6 +55,33 @@ spec:
       serviceAccountName: {{ include "tpl.serviceAccountName" . }}
       {{- end }}
       initContainers:
+      {{- if .Values.postgresql.enabled }}
+      - name: postgres-init-permissions
+        image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        command:
+          - sh
+          - -c
+          - |
+            set -e
+            echo "=== Cleaning old data ==="
+            rm -rf /var/lib/postgresql/data/pgdata/*
+            rm -rf /var/lib/postgresql/data/lost+found
+            echo "=== Creating fresh directory ==="
+            mkdir -p /var/lib/postgresql/data/pgdata
+            mkdir -p /var/run/postgresql
+            chown -R 999:999 /var/lib/postgresql/data
+            chown -R 999:999 /var/run/postgresql
+            echo "=== Ready for PostgreSQL ==="
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+          {{- if .Values.persistence.enabled }}
+          {{- range .Values.persistence.volumeClaimTemplates }}
+          - name: {{ .name }}
+            mountPath: {{ .mountPath | default "/var/lib/postgresql/data" }}
+          {{- end }}
+          {{- end }}
+      {{- end }}
       {{- with .Values.extraInitContainers }}
         {{- toYaml . | nindent 8 }}
       {{- end }} 
@@ -74,37 +101,6 @@ spec:
             {{- range .Values.command }}
               - {{ . | quote }}
             {{- end }}
-          {{- else if .Values.postgresql.enabled }}
-          command:
-            - "sh"
-            - "-c"
-            - |
-              set -e
-              mkdir -p "$PGDATA"
-              mkdir -p /var/run/postgresql
-              
-              if [ ! -s "$PGDATA/PG_VERSION" ]; then
-                echo "Initializing database with relaxed permissions..."
-                initdb \
-                  -D "$PGDATA" \
-                  --username="$POSTGRES_USER" \
-                  --pwfile=<(echo "$POSTGRES_PASSWORD") \
-                  --auth=md5 \
-                  --encoding=UTF8 \
-                  --locale=en_US.utf8 \
-                  --allow-group-access
-                
-                echo "host all all all md5" >> "$PGDATA/pg_hba.conf"
-                echo "listen_addresses='*'" >> "$PGDATA/postgresql.conf"
-                
-                pg_ctl -D "$PGDATA" -o "-c listen_addresses=''" -w start
-                psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
-                  CREATE DATABASE "$POSTGRES_DB";
-              EOSQL
-                pg_ctl -D "$PGDATA" -m fast -w stop
-              fi
-              
-              exec postgres
           {{- end }}
           {{- if .Values.args }}
           args:          
@@ -140,6 +136,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secretName | default (printf "%s-secret" .Release.Name) }}
                   key: {{ .Values.postgresql.databaseKey }}
+            - name: POSTGRES_INITDB_ARGS
+              value: "--auth-host=md5 --encoding=UTF8 --locale=en_US.utf8"
             {{- end }}
             {{- if .Values.extraEnvs }}
             {{ toYaml .Values.extraEnvs | nindent 12 }}
