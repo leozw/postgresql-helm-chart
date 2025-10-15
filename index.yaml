@@ -6,10 +6,10 @@ entries:
       licenses: MIT
     apiVersion: v2
     appVersion: 17-alpine
-    created: "2025-10-15T13:05:32.127858-03:00"
+    created: "2025-10-15T13:12:56.182731-03:00"
     description: A production-ready Helm chart for deploying PostgreSQL on Kubernetes
       with enhanced security, high availability, and monitoring capabilities
-    digest: ceae8bea43de9d415c4f8827138442b46b64c4bb198bdc74c1be178cd1172de1
+    digest: 4c8d0a4349ee490beaf47df747adc25b2e1e9de0f834d8fe8e068fd4829df843
     home: https://github.com/leozw/postgresql-helm-chart
     keywords:
     - postgresql
@@ -27,6 +27,6 @@ entries:
     - https://github.com/leozw/postgresql-helm-chart
     type: application
     urls:
-    - https://leozw.github.io/postgresql-helm-chart/postgresql-0.2.2.tgz
-    version: 0.2.2
-generated: "2025-10-15T13:05:32.126729-03:00"
+    - https://leozw.github.io/postgresql-helm-chart/postgresql-0.2.3.tgz
+    version: 0.2.3
+generated: "2025-10-15T13:12:56.181906-03:00"
