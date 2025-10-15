@@ -53,9 +53,29 @@ spec:
       {{- if not .Values.serviceAccount.automount }}
       automountServiceAccountToken: false
       {{- end }}
-      {{- if .Values.extraInitContainers }}
+      {{- if or .Values.extraInitContainers .Values.fixPermissions.enabled }}
       initContainers:
+        {{- if .Values.fixPermissions.enabled }}
+        - name: fix-permissions
+          image: "{{ .Values.fixPermissions.image.repository }}:{{ .Values.fixPermissions.image.tag }}"
+          imagePullPolicy: {{ .Values.fixPermissions.image.pullPolicy }}
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "Fixing permissions for PostgreSQL data directory..."
+              chown -R 999:999 /var/lib/postgresql/data
+              chmod -R 755 /var/lib/postgresql/data
+              echo "Permissions fixed successfully"
+          securityContext:
+            runAsUser: 0  # Run as root to fix permissions
+            runAsGroup: 0
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+        {{- end }}
+        {{- if .Values.extraInitContainers }}
         {{- toYaml .Values.extraInitContainers | nindent 8 }}
+        {{- end }}
       {{- end }}
       containers:
       {{- with .Values.extraContainers }}
