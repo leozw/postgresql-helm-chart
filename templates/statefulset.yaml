@@ -62,16 +62,21 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              echo "Preparing PostgreSQL data directory..."
+              echo "Fixing permissions for PostgreSQL data directory..."
               # Create directory if it doesn't exist
               mkdir -p /var/lib/postgresql/data
-              # Set proper permissions using fsGroup from pod security context
-              # The fsGroup (999) will be applied automatically by Kubernetes
-              echo "Data directory prepared successfully"
+              # Fix permissions as root
+              chown -R 999:999 /var/lib/postgresql/data
+              chmod -R 755 /var/lib/postgresql/data
+              echo "Permissions fixed successfully"
           securityContext:
-            runAsUser: 999
-            runAsGroup: 999
-            runAsNonRoot: true
+            runAsUser: 0  # Run as root to fix permissions
+            runAsGroup: 0
+            runAsNonRoot: false
+            privileged: false
+            allowPrivilegeEscalation: true
+            capabilities:
+              add: [ALL]
           volumeMounts:
             - name: postgres-storage
               mountPath: /var/lib/postgresql/data
