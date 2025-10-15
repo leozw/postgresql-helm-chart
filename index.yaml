@@ -3,12 +3,12 @@ entries:
   postgresql:
   - apiVersion: v2
     appVersion: 17-alpine
-    created: "2025-10-15T11:55:20.531157-03:00"
+    created: "2025-10-15T11:59:49.282587-03:00"
     description: A production-ready Helm chart for deploying PostgreSQL on Kubernetes
-    digest: f2378f5ad1a1232e198e9001eea89b821421f05cb93bcbaaa90eaee4923c7102
+    digest: d6eb5d7a766a02be09bea3bbacc6e501880396bdbb083effe7f2396acc171ff3
     name: postgresql
     type: application
     urls:
-    - https://leozw.github.io/postgresql-helm-chart/postgresql-0.1.4.tgz
-    version: 0.1.4
-generated: "2025-10-15T11:55:20.530634-03:00"
+    - https://leozw.github.io/postgresql-helm-chart/postgresql-0.1.5.tgz
+    version: 0.1.5
+generated: "2025-10-15T11:59:49.28206-03:00"
