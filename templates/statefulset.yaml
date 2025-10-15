@@ -111,7 +111,10 @@ spec:
             {{- if .Values.persistence.enabled }}
             {{- range .Values.persistence.volumeClaimTemplates }}
             - name: {{ .name }}
-              mountPath: {{ .mountPath }}
+              mountPath: {{ .mountPath | default "/var/lib/postgresql/data" }}
+              {{- if .subPath }}
+              subPath: {{ .subPath }}
+              {{- end }}
             {{- end }}
             {{- end }}
             {{- with .Values.extraVolumeMounts }}
@@ -161,7 +164,9 @@ spec:
       name: {{ .name }}
     spec:
       accessModes: {{ .accessModes | toYaml | nindent 6 }}
-      storageClassName: {{ .storageClassName | default "" }}
+      {{- if .storageClassName }}
+      storageClassName: {{ .storageClassName }}
+      {{- end }}
       resources:
         requests:
           storage: {{ .resources.requests.storage }}
