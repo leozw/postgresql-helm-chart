@@ -1,6 +1,3 @@
-# Production values for PostgreSQL Helm Chart
-# This file contains production-ready configurations with enhanced security and scalability
-
 # Number of replicas for high availability
 replicaCount: 1
 
