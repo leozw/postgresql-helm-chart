@@ -1,6 +1,6 @@
 apiVersion: v2
 name: postgresql
-description: A production-ready Helm chart for deploying PostgreSQL on Kubernetes
+description: A production-ready Helm chart for deploying PostgreSQL on Kubernetes with enhanced security, high availability, and monitoring capabilities
 
 # A chart can be either an 'application' or a 'library' chart.
 # Application charts are a collection of templates that can be packaged into versioned archives
@@ -14,10 +14,37 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.9
+version: 0.2.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "17-alpine"
+
+# Keywords for the chart
+keywords:
+  - postgresql
+  - database
+  - sql
+  - postgres
+  - high-availability
+  - security
+  - monitoring
+
+# Home page for the chart
+home: https://github.com/leozw/postgresql-helm-chart
+
+# Sources for the chart
+sources:
+  - https://github.com/leozw/postgresql-helm-chart
+
+# Maintainers
+maintainers:
+  - name: Leonardo Zwirtes
+    email: leonardo@example.com
+
+# Annotations
+annotations:
+  category: Database
+  licenses: MIT

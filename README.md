@@ -37,12 +37,16 @@ helm uninstall my-postgres
 ## Features
 
 - **StatefulSet** deployment with persistent storage
-- **Security** contexts and secrets management
+- **Enhanced Security** with Pod Security Standards, NetworkPolicy, and secure contexts
+- **High Availability** with anti-affinity rules and topology spread constraints
 - **Health checks** with liveness and readiness probes
-- **Auto scaling** with HPA support
+- **Auto scaling** with HPA v2 support and advanced scaling behaviors
 - **Flexible configuration** via ConfigMaps and Secrets
 - **Service discovery** ready
-- **Backup scheduling** via CronJobs
+- **Automated backup** scheduling via CronJobs with retention policies
+- **Monitoring** ready with Prometheus ServiceMonitor support
+- **PodDisruptionBudget** for availability during updates
+- **Production-ready** configurations with security best practices
 
 ## Configuration
 
@@ -117,6 +121,16 @@ tolerations:
 ```
 
 ## Security Best Practices
+
+### Enhanced Security Features
+
+This chart includes several security enhancements inspired by Bitnami's best practices:
+
+- **Pod Security Standards**: Enforces restricted security policies
+- **NetworkPolicy**: Controls network traffic to/from PostgreSQL pods
+- **Secure Contexts**: Runs containers as non-root with minimal capabilities
+- **Service Account**: Dedicated service account with controlled permissions
+- **Seccomp Profiles**: Runtime security profiles for additional protection
 
 ### Using External Secrets
 
@@ -228,6 +242,54 @@ CronJobs:
     failedJobsHistoryLimit: 1
 ```
 
+## High Availability & Production
+
+### Production Deployment
+
+For production environments, use the provided production values:
+
+```bash
+# Deploy with production configuration
+helm install my-postgres postgresql/postgresql \
+  -f values-production.yaml \
+  --set Secrets.POSTGRES_PASSWORD="$(openssl rand -base64 32)" \
+  --namespace database --create-namespace
+```
+
+### High Availability Features
+
+- **Anti-Affinity Rules**: Ensures pods are distributed across different nodes
+- **Topology Spread Constraints**: Controls pod distribution for optimal availability
+- **PodDisruptionBudget**: Maintains availability during cluster updates
+- **Multi-Replica Support**: Run multiple PostgreSQL instances for redundancy
+
+### Monitoring & Observability
+
+Enable monitoring with Prometheus:
+
+```yaml
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    labels:
+      prometheus: kube-prometheus
+```
+
+### Automated Backups
+
+Configure automated backups with retention:
+
+```yaml
+backup:
+  enabled: true
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  retention: "30d"       # Keep for 30 days
+  storage:
+    size: 50Gi
+    storageClass: "fast-ssd"
+```
+
 ## Configuration Reference
 
 | Parameter | Description | Default |
@@ -247,6 +309,11 @@ CronJobs:
 | `autoscaling.enabled` | Enable Horizontal Pod Autoscaler | `false` |
 | `service.type` | Kubernetes service type | `ClusterIP` |
 | `secretName` | Custom secret name | `<release-name>-secret` |
+| `networkPolicy.enabled` | Enable NetworkPolicy | `false` |
+| `podDisruptionBudget.enabled` | Enable PodDisruptionBudget | `false` |
+| `highAvailability.enabled` | Enable HA features | `false` |
+| `backup.enabled` | Enable automated backups | `false` |
+| `monitoring.enabled` | Enable monitoring | `false` |
 
 See [values.yaml](values.yaml) for all available options.
 

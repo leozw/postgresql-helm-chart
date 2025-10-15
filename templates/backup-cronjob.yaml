@@ -1,0 +1,99 @@
+{{- if .Values.backup.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "tpl.fullname" . }}-backup
+  labels:
+    {{- include "tpl.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.backup.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "tpl.selectorLabels" . | nindent 12 }}
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: postgres-backup
+            image: "{{ .Values.backup.image.repository }}:{{ .Values.backup.image.tag }}"
+            imagePullPolicy: {{ .Values.backup.image.pullPolicy }}
+            command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              BACKUP_FILE="/backup/backup-$(date +%Y%m%d-%H%M%S).sql"
+              echo "Starting backup at $(date)"
+              
+              # Create backup
+              pg_dump -h {{ include "tpl.fullname" . }}-{{ include "tpl.servicename" . }} \
+                -U $POSTGRES_USER \
+                -d $POSTGRES_DB \
+                --verbose \
+                --no-password \
+                > $BACKUP_FILE
+              
+              # Compress backup
+              gzip $BACKUP_FILE
+              
+              # Remove old backups (keep only last 7 days)
+              find /backup -name "backup-*.sql.gz" -mtime +7 -delete
+              
+              echo "Backup completed: ${BACKUP_FILE}.gz"
+            env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName | default (printf "%s-secret" .Release.Name) }}
+                  key: {{ .Values.postgresql.userKey }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName | default (printf "%s-secret" .Release.Name) }}
+                  key: {{ .Values.postgresql.passwordKey }}
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName | default (printf "%s-secret" .Release.Name) }}
+                  key: {{ .Values.postgresql.databaseKey }}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName | default (printf "%s-secret" .Release.Name) }}
+                  key: {{ .Values.postgresql.passwordKey }}
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /backup
+            resources:
+              requests:
+                memory: 256Mi
+                cpu: 100m
+              limits:
+                memory: 512Mi
+                cpu: 500m
+          volumes:
+          - name: backup-storage
+            persistentVolumeClaim:
+              claimName: {{ include "tpl.fullname" . }}-backup-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "tpl.fullname" . }}-backup-pvc
+  labels:
+    {{- include "tpl.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.backup.storage.storageClass }}
+  storageClassName: {{ .Values.backup.storage.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.backup.storage.size }}
+{{- end }}

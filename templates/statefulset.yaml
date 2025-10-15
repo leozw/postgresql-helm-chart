@@ -50,6 +50,9 @@ spec:
       {{- if .Values.serviceAccount.create }}
       serviceAccountName: {{ include "tpl.serviceAccountName" . }}
       {{- end }}
+      {{- if not .Values.serviceAccount.automount }}
+      automountServiceAccountToken: false
+      {{- end }}
       {{- if .Values.extraInitContainers }}
       initContainers:
         {{- toYaml .Values.extraInitContainers | nindent 8 }}
@@ -137,9 +140,48 @@ spec:
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.highAvailability.enabled }}
+      affinity:
+        {{- if eq .Values.highAvailability.antiAffinity "hard" }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - {{ .Release.Name }}
+            topologyKey: kubernetes.io/hostname
+        {{- else if eq .Values.highAvailability.antiAffinity "soft" }}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - {{ .Release.Name }}
+              topologyKey: kubernetes.io/hostname
+        {{- end }}
+        {{- with .Values.affinity }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- else }}
       {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.highAvailability.topologySpreadConstraints.enabled }}
+      topologySpreadConstraints:
+      - maxSkew: {{ .Values.highAvailability.topologySpreadConstraints.maxSkew }}
+        topologyKey: {{ .Values.highAvailability.topologySpreadConstraints.topologyKey }}
+        whenUnsatisfiable: {{ .Values.highAvailability.topologySpreadConstraints.whenUnsatisfiable }}
+        labelSelector:
+          matchLabels:
+            {{- include "tpl.selectorLabels" . | nindent 12 }}
       {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
