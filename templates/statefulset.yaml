@@ -47,8 +47,10 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.podSecurityContext }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- end }}
       {{- if .Values.serviceAccount.create }}
       serviceAccountName: {{ include "tpl.serviceAccountName" . }}
       {{- end }}
@@ -61,8 +63,10 @@ spec:
          {{- toYaml . | nindent 8 }}
       {{- end }}
         - name: {{ .Release.Name }}
+          {{- if .Values.securityContext }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }} 
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if .Values.command }}
@@ -71,25 +75,24 @@ spec:
               - {{ . | quote }}
             {{- end }}
           {{- else if .Values.postgresql.enabled }}
-          {{/* PostgreSQL-specific command that bypasses chmod issues */}}
           command:
             - "sh"
             - "-c"
             - |
               set -e
-              echo "Starting PostgreSQL with permission workaround..."
               mkdir -p "$PGDATA"
-              chmod 700 "$PGDATA" 2>/dev/null || true
               mkdir -p /var/run/postgresql
-              chmod 775 /var/run/postgresql 2>/dev/null || true
-              chown -R postgres:postgres /var/run/postgresql 2>/dev/null || true
               
               if [ ! -s "$PGDATA/PG_VERSION" ]; then
-                echo "Initializing database..."
-                initdb --username="$POSTGRES_USER" \
+                echo "Initializing database with relaxed permissions..."
+                initdb \
+                  -D "$PGDATA" \
+                  --username="$POSTGRES_USER" \
                   --pwfile=<(echo "$POSTGRES_PASSWORD") \
-                  --auth-local=trust \
-                  --auth-host=md5 || exit 1
+                  --auth=md5 \
+                  --encoding=UTF8 \
+                  --locale=en_US.utf8 \
+                  --allow-group-access
                 
                 echo "host all all all md5" >> "$PGDATA/pg_hba.conf"
                 echo "listen_addresses='*'" >> "$PGDATA/postgresql.conf"
