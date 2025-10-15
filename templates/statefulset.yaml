@@ -32,10 +32,6 @@ spec:
         {{- end }}
         {{- if or .Values.ConfigMap .Values.extraConfigMap.enabled .Values.Secrets .Values.extraSecrets.enabled }}
         configChecksum: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-        configChecksum: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-        configChecksum: {{ include (print $.Template.BasePath "/configmap_extra.yaml") . | sha256sum }}
-        configChecksum: {{ include (print $.Template.BasePath "/secret_extra.yaml") . | sha256sum }}
-        "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
         {{- end }}
       labels:
         {{- include "tpl.selectorLabels" . | nindent 8 }}
@@ -54,40 +50,13 @@ spec:
       {{- if .Values.serviceAccount.create }}
       serviceAccountName: {{ include "tpl.serviceAccountName" . }}
       {{- end }}
+      {{- if .Values.extraInitContainers }}
       initContainers:
-      {{- if .Values.postgresql.enabled }}
-      - name: postgres-init-permissions
-        image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-        command:
-          - sh
-          - -c
-          - |
-            set -e
-            echo "=== Cleaning old data ==="
-            rm -rf /var/lib/postgresql/data/pgdata/*
-            rm -rf /var/lib/postgresql/data/lost+found
-            echo "=== Creating fresh directory ==="
-            mkdir -p /var/lib/postgresql/data/pgdata
-            mkdir -p /var/run/postgresql
-            chown -R 999:999 /var/lib/postgresql/data
-            chown -R 999:999 /var/run/postgresql
-            echo "=== Ready for PostgreSQL ==="
-        securityContext:
-          runAsUser: 0
-        volumeMounts:
-          {{- if .Values.persistence.enabled }}
-          {{- range .Values.persistence.volumeClaimTemplates }}
-          - name: {{ .name }}
-            mountPath: {{ .mountPath | default "/var/lib/postgresql/data" }}
-          {{- end }}
-          {{- end }}
+        {{- toYaml .Values.extraInitContainers | nindent 8 }}
       {{- end }}
-      {{- with .Values.extraInitContainers }}
-        {{- toYaml . | nindent 8 }}
-      {{- end }} 
       containers:
       {{- with .Values.extraContainers }}
-         {{- toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
         - name: {{ .Release.Name }}
           {{- if .Values.securityContext }}
@@ -97,24 +66,20 @@ spec:
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if .Values.command }}
-          command: 
-            {{- range .Values.command }}
-              - {{ . | quote }}
-            {{- end }}
+          command:
+            {{- toYaml .Values.command | nindent 12 }}
           {{- end }}
           {{- if .Values.args }}
-          args:          
-            {{- range .Values.args }}
-              - {{ . | quote }}
-            {{- end }}
+          args:
+            {{- toYaml .Values.args | nindent 12 }}
           {{- end }}
           ports:
             {{- if .Values.containerPorts }}
-            {{ toYaml .Values.containerPorts | nindent 12 }}
+            {{- toYaml .Values.containerPorts | nindent 12 }}
             {{- end }}
-            {{- if .Values.probe }}
-            {{ toYaml .Values.probe | nindent 10 }}
-            {{- end }}
+          {{- if .Values.probe }}
+          {{- toYaml .Values.probe | nindent 10 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
@@ -136,16 +101,14 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secretName | default (printf "%s-secret" .Release.Name) }}
                   key: {{ .Values.postgresql.databaseKey }}
-            - name: POSTGRES_INITDB_ARGS
-              value: "--auth-host=md5 --encoding=UTF8 --locale=en_US.utf8"
             {{- end }}
             {{- if .Values.extraEnvs }}
-            {{ toYaml .Values.extraEnvs | nindent 12 }}
+            {{- toYaml .Values.extraEnvs | nindent 12 }}
             {{- end }}
-            {{- if .Values.envFrom }}
+          {{- if .Values.envFrom }}
           envFrom:
-            {{ toYaml .Values.envFrom | nindent 12 }}
-            {{- end }}
+            {{- toYaml .Values.envFrom | nindent 12 }}
+          {{- end }}
           volumeMounts:
             {{- if .Values.persistence.enabled }}
             {{- range .Values.persistence.volumeClaimTemplates }}
@@ -202,13 +165,14 @@ spec:
   - metadata:
       name: {{ .name }}
     spec:
-      accessModes: {{ .accessModes | toYaml | nindent 6 }}
+      accessModes:
+        {{- toYaml .accessModes | nindent 8 }}
       {{- if .storageClassName }}
       storageClassName: {{ .storageClassName }}
       {{- end }}
       resources:
         requests:
           storage: {{ .resources.requests.storage }}
-  {{- end }}        
-  {{- end }}  
+  {{- end }}
+  {{- end }}
 {{- end }}
