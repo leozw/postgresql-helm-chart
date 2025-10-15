@@ -155,7 +155,7 @@ podDisruptionBudget:
 # Pod Security Standards
 podSecurityStandards:
   enabled: true
-  level: "restricted"
+  level: "restricted"  # restricted, baseline, privileged
 
 # Monitoring and observability
 monitoring:
@@ -352,8 +352,9 @@ extraContainers: []
 #       containerPort: 9187
 
 # Fix permissions for PostgreSQL data directory
+# This init container prepares the data directory and relies on fsGroup for permissions
 fixPermissions:
-  enabled: true
+  enabled: true  # Set to false if you have Pod Security Standards that prevent init containers
   image:
     repository: postgres
     tag: "17-alpine"
