@@ -1,0 +1,52 @@
+{{- if .Values.postgresql.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-entrypoint
+  labels:
+    {{- include "tpl.labels" . | nindent 4 }}
+data:
+  entrypoint.sh: |
+    #!/bin/sh
+    set -e
+    
+    echo "Starting PostgreSQL with custom entrypoint..."
+    
+    # Cria diretórios necessários
+    mkdir -p "$PGDATA"
+    mkdir -p /var/run/postgresql
+    chown -R postgres:postgres /var/run/postgresql 2>/dev/null || true
+    
+    # Se o banco não existe, inicializa
+    if [ ! -s "$PGDATA/PG_VERSION" ]; then
+      echo "Initializing PostgreSQL database..."
+      
+      # Inicializa como usuário postgres, sem validação estrita de permissões
+      gosu postgres initdb \
+        -D "$PGDATA" \
+        --username="$POSTGRES_USER" \
+        --pwfile=<(echo "$POSTGRES_PASSWORD") \
+        --auth-local=trust \
+        --auth-host=md5 \
+        --encoding=UTF8 \
+        --locale=en_US.utf8 \
+        --data-checksums
+      
+      # Configura conexões remotas
+      echo "host all all all md5" >> "$PGDATA/pg_hba.conf"
+      echo "listen_addresses='*'" >> "$PGDATA/postgresql.conf"
+      
+      # Inicia temporariamente para criar o banco
+      gosu postgres pg_ctl -D "$PGDATA" -o "-c listen_addresses=''" -w start
+      gosu postgres psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+        CREATE DATABASE "$POSTGRES_DB";
+      EOSQL
+      gosu postgres pg_ctl -D "$PGDATA" -m fast -w stop
+      
+      echo "PostgreSQL initialized successfully!"
+    fi
+    
+    # Inicia o PostgreSQL
+    echo "Starting PostgreSQL server..."
+    exec gosu postgres postgres
+{{- end }}
