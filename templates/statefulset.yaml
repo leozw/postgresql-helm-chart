@@ -108,6 +108,12 @@ spec:
             {{ toYaml .Values.envFrom | nindent 12 }}
             {{- end }}
           volumeMounts:
+            {{- if .Values.persistence.enabled }}
+            {{- range .Values.persistence.volumeClaimTemplates }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+            {{- end }}
+            {{- end }}
             {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
